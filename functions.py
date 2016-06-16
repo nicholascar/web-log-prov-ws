@@ -31,14 +31,8 @@ def datasets_html():
     r = requests.get(settings.SPARQL_ENDPOINT + '?query=' + encoded_query,
                      headers={'Accept': 'application/sparql-results+json'})
     if r.status_code == 200:
-        j = json.loads(r.content)['results']['bindings']
-        html += '<h1>Dataset URIs</h1>'
-        html += '<table class="data">\n'
-        for uri in j:
-            html += '   <tr><td><a href="' + j['dataset']['value'] + '">' + j['dataset']['value'] + '</a></td></tr>\n'
-        html += '</table>\n'
-
-        return html
+        print json.loads(r.content)['results']['bindings'][0]
+        return json.loads(r.content)['results']['bindings'][0]
     else:
         raise Exception('ERROR getting data from SPARQL endpoint')
 

@@ -26,7 +26,7 @@ def datasets():
         # parse the graph into HTML
         return render_template('index.html',
                                web_subfolder=settings.WEB_SUBFOLDER,
-                               page_html=functions.datasets_html())
+                               uris=functions.datasets_html())
     else:  # return RDF in all other cases request.args.get('_format') == 'text/turtle':
         r = requests.get(functions.datasets_turtle(),
                          headers={'Accept': 'text/turtle'})

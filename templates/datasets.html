@@ -1,0 +1,10 @@
+{% extends "ga_layout.html" %}
+
+{% block content %}
+    <h1>WS Outputs datasets</h1>
+    <table>
+    {%  for uri in uris %}
+        <tr><td><a href="{{ uri }}">{{ uri }}</a></td></tr>
+    {% endfor %}
+    </table>
+{% endblock %}
