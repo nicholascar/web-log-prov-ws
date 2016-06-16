@@ -4,6 +4,7 @@ import urllib
 import json
 import settings
 
+
 '''
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -17,7 +18,50 @@ import settings
     prov:wasGeneratedBy <http://pid-test.geoscience.gov.au/activity/service/lbmrx5>
 .
 '''
-def entity_html(uri):
+def datasets_html():
+    html = ''
+    query = '''
+        PREFIX prov: <http://www.w3.org/ns/prov#>
+        SELECT *
+        WHERE {
+          ?dataset a prov:Entity .
+        }
+    '''
+    encoded_query = urllib.quote_plus(query)
+    r = requests.get(settings.SPARQL_ENDPOINT + '?query=' + encoded_query,
+                     headers={'Accept': 'application/sparql-results+json'})
+    if r.status_code == 200:
+        j = json.loads(r.content)['results']['bindings'][0]
+        html += '<h1>' + j['label']['value'] + '</h1>'
+        html += '<table class="data">\n'
+        for uri in j:
+            html += '   <tr><td><a href="' + j['dataset']['value'] + '">' + j['dataset']['value'] + '</a></td></tr>\n'
+        html += '</table>\n'
+
+        return html
+    else:
+        raise Exception('ERROR getting data from SPARQL endpoint')
+
+
+def datasets_turtle():
+    turtle = ''
+    query = '''
+        PREFIX prov: <http://www.w3.org/ns/prov#>
+        SELECT *
+        WHERE {
+          ?dataset a prov:Entity .
+        }
+    '''
+    encoded_query = urllib.quote_plus(query)
+    r = requests.get(settings.SPARQL_ENDPOINT + '?query=' + encoded_query,
+                     headers={'Accept': 'text/turtle'})
+    if r.status_code == 200:
+        return r.content
+    else:
+        raise Exception('ERROR getting data from SPARQL endpoint')
+
+
+def dataset_html(uri):
     html = ''
     query = '''
         PREFIX prov: <http://www.w3.org/ns/prov#>
@@ -38,9 +82,7 @@ def entity_html(uri):
     r = requests.get(settings.SPARQL_ENDPOINT + '?query=' + encoded_query,
                      headers={'Accept': 'application/sparql-results+json'})
     if r.status_code == 200:
-        print r.content
         j = json.loads(r.content)['results']['bindings'][0]
-        print j
         html += '<h1>' + j['label']['value'] + '</h1>'
         html += '<table class="data">\n'
         html += '   <tr><th>Generated At:</th><td>' + j['date']['value'] + '</td></tr>\n'
