@@ -24,7 +24,9 @@ def activities():
 def datasets():
     if request.args.get('_format') is None or request.args.get('_format') == 'text/html':
         # parse the graph into HTML
-        return Response(functions.datasets_html(), status=200, mimetype='text/html')
+        return render_template('index.html',
+                               web_subfolder=settings.WEB_SUBFOLDER,
+                               page_html=functions.datasets_html())
     else:  # return RDF in all other cases request.args.get('_format') == 'text/turtle':
         r = requests.get(functions.datasets_turtle(),
                          headers={'Accept': 'text/turtle'})
