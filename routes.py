@@ -1,16 +1,15 @@
-import logging
-import json
 from flask import Blueprint, Response, render_template, request
 import functions
 import settings
 import requests
+import urllib
+import rdflib
 routes = Blueprint('routes', __name__)
 
 
 @routes.route('/')
 def index():
     return render_template('index.html')
-
 
 
 @routes.route('/activities')
@@ -21,3 +20,14 @@ def activities():
     return r.content
 
 
+@routes.route('/entity/wsoutput/<string:uri_id>')
+def entity(uri_id):
+    uri = '<' + settings.BASE_URI_ENTITY + uri_id + '>'
+    encoded_uri = urllib.quote_plus(uri)
+    if request.args.get('_format') is None or request.args.get('_format') == 'text/html':
+        # parse the graph into HTML
+        return Response(functions.entity_html(uri), status=200, mimetype='text/html')
+    else: # return RDF in all other cases request.args.get('_format') == 'text/turtle':
+        r = requests.get(settings.SPARQL_ENDPOINT + '?query=DESCRIBE+' + encoded_uri,
+                         headers={'Accept': 'text/turtle'})
+        return Response(r.content, status=200, mimetype='text/turtle')
