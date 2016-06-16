@@ -32,7 +32,7 @@ def datasets_html():
                      headers={'Accept': 'application/sparql-results+json'})
     if r.status_code == 200:
         j = json.loads(r.content)['results']['bindings'][0]
-        html += '<h1>' + j['label']['value'] + '</h1>'
+        html += '<h1>Dataset URIs</h1>'
         html += '<table class="data">\n'
         for uri in j:
             html += '   <tr><td><a href="' + j['dataset']['value'] + '">' + j['dataset']['value'] + '</a></td></tr>\n'
